@@ -50,7 +50,7 @@ function Search() {
             isSearchClicked ? 'search-moved' : ''
           }`}
         >
-          <Col xs={9} lassName='d-flex justify-content-center'>
+          <Col xs={9} className='d-flex justify-content-center'>
             <Form onSubmit={handleSubmit} className='search-form' width="width: 100%">
               <div className='mt-3 mb-2'>
                 <InputGroup size='lg'>
