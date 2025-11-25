@@ -22,11 +22,14 @@ function Search() {
   const [query, setQuery] = useState(null);
   const [result, setResult] = useState(null);
   const [isSearchClicked, setIsSearchClicked] = useState(false);
+  const [isOnline, setIsOnline] = useState(true);
   
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await fetch(`${host}/search?query=${query}&lang=${locale}`)
+    const endpoint = isOnline ? 'search' : 'searchClass';
+
+    await fetch(`${host}/${endpoint}?query=${query}&lang=${locale}`)
       .then(response => response.json())
       .then(data => {
         setIsSearchClicked(true);
@@ -50,8 +53,8 @@ function Search() {
             isSearchClicked ? 'search-moved' : ''
           }`}
         >
-          <Col xs={9} className='d-flex justify-content-center'>
-            <Form onSubmit={handleSubmit} className='search-form' width="width: 100%">
+          <Col xs={12} lg={7} className='d-flex justify-content-center mb-3 mb-lg-0'>
+            <Form onSubmit={handleSubmit} className='search-form' style={{width: '100%'}}>
               <div className='mt-3 mb-2'>
                 <InputGroup size='lg'>
                   <Form.Control
@@ -66,14 +69,25 @@ function Search() {
             </Form>
           </Col>
 
-          <Col xs={3} className="d-flex justify-content-center">
-            <Form.Select onChange={handleChangeTranslation}>
+          <Col xs={6} lg={3} className="d-flex justify-content-center mb-2 mb-lg-0">
+            <Form.Select onChange={handleChangeTranslation} style={{minWidth: '120px'}}>
               {translations.map(t => (
                 <option key={t} value={t}>
                   <FormattedMessage id={t} />
                 </option>
               ))}
             </Form.Select>
+          </Col>
+
+          <Col xs={6} lg={2} className="d-flex justify-content-center align-items-center">
+            <Form.Check
+              type="switch"
+              id="online-toggle"
+              label={isOnline ? 'Online' : 'Offline'}
+              checked={isOnline}
+              onChange={(e) => setIsOnline(e.target.checked)}
+              className="online-toggle"
+            />
           </Col>
         </Row>
 
