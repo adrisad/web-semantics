@@ -27,13 +27,26 @@ def indexIndividual(locale, class_, name_individual):
     return render_template('index.html')
 
 @app.route('/searchClass', methods=['GET'])
-def searchClass(): 
+def searchClass():
     query=  request.args['query']
     #query = translate_(request.args['query'], dest='es')
     lang = request.args['lang']
-    if query is None: 
+    print(f"[searchClass] Query recibido: '{query}', Idioma: '{lang}'")
+    if query is None:
         abort(404, f"Class {query} not exists")
-    return jsonify(ontology.getInstancesByClass(query, lang))
+
+    instances = ontology.getInstancesByClass(query, lang)
+    print(f"[searchClass] Resultado obtenido: {len(instances) if isinstance(instances, list) else 'N/A'} instancias encontradas")
+
+    # Devolver en el mismo formato que /search: {nombre_clase: [instancias]}
+    result = {}
+    if len(instances) == 0:
+        msg = translate_('No existen resultados para esta clase', dest=lang)
+        result[msg] = []
+    else:
+        result[query] = instances
+
+    return jsonify(result)
 
 @app.route('/search', methods=['GET'])
 def search():
@@ -44,16 +57,16 @@ def search():
         return jsonify({'error': 'Must have a query'}) # this must redirect the frontend
     
     result_dbpedia = dbpedia.searchDBPedia(preprocess(translate_(query, dest='en')))
-    print('termine el primero')
-    result = ontology.search(preprocess(translate_(query, dest='es')), lang)
-    print('termine el segundo')
-    if len(result_dbpedia) != 0: result['DOID.dbpedia.Disease'] = result_dbpedia
-
-    if len(result) == 0:
+    #print('termine el primero')
+    result = {}
+    #print(f"📊 Resultados DBpedia: {result_dbpedia}")
+    if len(result_dbpedia) == 0:
         msg = translate_('No existen busquedas encontradas', dest=lang)
         result[msg] = []
+    else:
+        result['DOID.dbpedia.Disease'] = result_dbpedia
 
-    return result
+    return jsonify(result)
 
 def translate(result, lang):
     for class_ in result.keys():

@@ -38,13 +38,15 @@ def struct_individuals(individual, classOntology, lang):
     instances = []
     
     for individual in classOntology.instances():
+        nombre_prop = getNombreProp(individual, individual.get_properties())[0]
         instances.append({
             "iri" : individual.iri,
+            "name": translate(preprocess(nombre_prop), dest=lang),  # Campo compatible con DBPedia
             "name_class": translate(preprocess(classOntology.name), dest=lang),
-            "name_individual": translate(preprocess(getNombreProp(individual, individual.get_properties())[0]), dest=lang),
+            "name_individual": translate(preprocess(nombre_prop), dest=lang),
             "properties" : struct_properties(individual, lang),
             "sample_name": individual.name,
-            "name_individual_o": getNombreProp(individual, individual.get_properties())[0],
+            "name_individual_o": nombre_prop,
         })
     return instances
 

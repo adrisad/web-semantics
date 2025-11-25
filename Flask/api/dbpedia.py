@@ -30,6 +30,14 @@ for result in root.findall(".//{http://www.w3.org/2005/sparql-results#}result"):
 
 def searchDBPedia(query):
     results = []
+    #print(f"📊 Total: {len(list(graph.triples((None, RDF.type, None))))} enfermedades")
+    #print("=" * 50)
+
+    #print("🏥 LISTA DE ENFERMEDADES CARGADAS:")
+    #for idx, (iri, predicate, obj) in enumerate(graph.triples((None, RDF.type, None))):
+    #    name1 = iri.split('/')[-1]
+    #    print(f"{idx + 1}. {name1}")
+
     for iri, predicate, obj in graph.triples((None, RDF.type, None)):
     	name = preprocess(iri.split('/')[-1])
     	if (match(name, query)) >= 75.0:

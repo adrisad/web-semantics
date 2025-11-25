@@ -61,7 +61,7 @@ def get(iri: str):
 	"""
 	return ontologie[iri[iri.find('#'):]] # aqui deberia estar el cuerpo completo de un item basado en su iri
 
-def getInstancesByClass(name: str, lang: str): 
+def getInstancesByClass(name: str, lang: str):
 	"""
 	Retrieve instances of a specified class from the ontology.
 
@@ -74,10 +74,26 @@ def getInstancesByClass(name: str, lang: str):
 			Each dictionary contains the 'iri', 'name_class', 'name_individual', and 'properties'
 			of the individual. Returns an empty list if the class is not found.
 	"""
+	print(f"[DEBUG] getInstancesByClass - nombre: {name}, idioma: {lang}")
 	class_ = getattr(ontologie, name, None)
-	if class_ is None: 
+	print(f"[DEBUG] getInstancesByClass - clase encontrada: {class_}")
+	print(f"[DEBUG] getInstancesByClass - tipo de objeto: {type(class_)}")
+	print(f"[DEBUG] getInstancesByClass - es una clase?: {isinstance(class_, ThingClass) if class_ else False}")
+
+	if class_ is None:
+		print(f"[DEBUG] getInstancesByClass - Clase '{name}' no encontrada, retornando lista vacía")
 		return []
-	return struct_individuals(class_.instances(), class_, lang)
+
+	# Verificar que sea una clase de la ontología
+	if not isinstance(class_, ThingClass):
+		print(f"[DEBUG] getInstancesByClass - '{name}' no es una clase válida de la ontología")
+		return []
+
+	instances = class_.instances()
+	print(f"[DEBUG] getInstancesByClass - número de instancias: {len(list(instances))}")
+	result = struct_individuals(class_.instances(), class_, lang)
+	print(f"[DEBUG] getInstancesByClass - número de resultados: {len(result)}")
+	return result
 
 def getClassesOntologie():
 	"""
